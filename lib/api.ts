@@ -5,7 +5,8 @@ const API_KEY = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN;
 export const PER_PAGE = 12;
 
 const NoteService = axios.create({
-  baseURL: 'https://notehub-public.goit.study/api/notes',
+  baseURL: 'http://localhost:3000/api',
+  withCredentials: true,
   headers: {
     accept: 'application/json',
     Authorization: `Bearer ${API_KEY}`,
@@ -47,7 +48,9 @@ export const fetchNotes = async ({
 };
 
 export const fetchNoteById = async (noteId: string): Promise<Note> => {
-  const { data } = await NoteService.get<Note>(`/${noteId}`);
+  const { data } = await NoteService.get<Note>(`/${noteId}`, {
+    params: { noteId },
+  });
   return data;
 };
 

@@ -16,6 +16,12 @@ const Header = () => {
           <li>
             <Link href={`/notes/filter/${ALL_NOTES}`}>Notes</Link>
           </li>
+          <li>
+            <Link href="/sign-in">Login</Link>
+          </li>
+          <li>
+            <Link href="/sign-up">Register</Link>
+          </li>
         </ul>
       </nav>
     </header>

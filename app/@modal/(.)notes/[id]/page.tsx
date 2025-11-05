@@ -1,4 +1,3 @@
-// app/@modal/(.)notes/[id]/page.tsx
 import { fetchNoteById } from '@/lib/api';
 import {
   dehydrate,
