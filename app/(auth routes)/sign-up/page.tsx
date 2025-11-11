@@ -2,17 +2,29 @@
 
 'use client';
 
-// Додаємо імпорти
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { ApiError } from '@/lib/api/api';
-import { register, RegisterRequest } from '@/lib/api/api';
+import axios from "axios";
+import { Note } from "@/types/note";
+import { TAGS } from "@/lib/constants";
+import {NewNote} from "@/types/note";
+
+interface AuthUserData {
+  email: string;
+  password: string;
+}
+
+const initialUserData: AuthUserData = {
+  email: '',
+  password: '',
+};
 
 const SignUp = () => {
   const router = useRouter();
   const [error, setError] = useState('');
 
-  const handleSubmit = async (formData: FormData) => {
+  const handleSubmit = async (
+    values: AuthUserData,
+    actions.ResetForm();
+  ) => {
     try {
       // Типізуємо дані форми
       const formValues = Object.fromEntries(formData) as RegisterRequest; // Виконуємо запит

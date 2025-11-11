@@ -14,21 +14,23 @@ const Modal = ({ onClose, children }: ModalProps) => {
     if (event.target === event.currentTarget) onClose();
   };
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
+  // useEffect(() => {
+  //   const handleKeyDown = (e: KeyboardEvent) => {
+  //     if (e.key === 'Escape') onClose();
+  //   };
 
-    document.addEventListener('keydown', handleKeyDown);
-    document.body.style.overflow = 'hidden';
+  //   document.addEventListener('keydown', handleKeyDown);
+  //   document.body.style.overflow = 'hidden';
 
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = '';
-    };
-  }, [onClose]);
+  //   return () => {
+  //     document.removeEventListener('keydown', handleKeyDown);
+  //     document.body.style.overflow = '';
+  //   };
+  // }, [onClose]);
 
-  return createPortal(
+  return
+  // createPortal
+    (
     <div
       className={css.backdrop}
       onClick={handleBackdropClick}

@@ -1,4 +1,7 @@
+// app/types/note.ts
+
 import { TAGS } from '@/lib/constants';
+import { AxiosError } from 'axios';
 
 export interface Note {
   id: string;
@@ -10,3 +13,11 @@ export interface Note {
 }
 
 export type NoteTag = (typeof TAGS)[number];
+
+export interface NewNote {
+  title: string;
+  content: string;
+  tag: NoteTag;
+}
+
+export type ApiError = AxiosError<{ error: string }>;

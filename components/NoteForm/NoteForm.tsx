@@ -1,3 +1,5 @@
+// app/components/NoteForm/NoteForm.tsx
+
 'use client';
 
 import {
@@ -14,7 +16,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useId } from 'react';
 import { createNote } from '@/lib/api';
 import css from './NoteForm.module.css';
-import { useNoteDraftStore } from '@/lib/store/noteStore';
+import { useNoteDraftStore } from '@/lib/stores/noteStore';
 import { useRouter } from 'next/navigation';
 
 const TAGS = ['Todo', 'Work', 'Personal', 'Meeting', 'Shopping'] as const;
@@ -81,7 +83,7 @@ const NoteForm = ({ onClose, onSuccess }: NoteFormProps) => {
       onSubmit={handleSubmit}
       validateOnMount
     >
-      {({ isValid, dirty }) => (
+      {({ isValid }) => (
         <Form className={css.form} noValidate>
           <div className={css.formGroup}>
             <label htmlFor={`${fieldId}-title`}>Title</label>

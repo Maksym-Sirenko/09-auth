@@ -6,11 +6,11 @@ import {
 } from '@tanstack/react-query';
 import NotePreview from './NotePreview.client';
 
-interface Props {
+interface NoteProps {
   params: Promise<{ id: string }>;
 }
 
-const ModalNotePage = async ({ params }: Props) => {
+const ModalNotePage = async ({ params }: NoteProps) => {
   const { id } = await params;
   const queryClient = new QueryClient();
 
