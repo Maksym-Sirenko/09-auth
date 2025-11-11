@@ -11,13 +11,16 @@ export interface Note {
   updatedAt: string;
   tag: NoteTag;
 }
-
-export type NoteTag = (typeof TAGS)[number];
-
 export interface NewNote {
   title: string;
   content: string;
   tag: NoteTag;
 }
+export interface NoteListResponse {
+  notes: Note[];
+  totalPages: number;
+}
+
+export type NoteTag = (typeof TAGS)[number];
 
 export type ApiError = AxiosError<{ error: string }>;

@@ -1,5 +1,7 @@
 export const ALL_NOTES = 'all';
 
+з'ясувати кількість та назви тагів!!!!
+
 export const TAGS = [
   'Todo',
   'Work',

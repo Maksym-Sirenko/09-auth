@@ -11,8 +11,8 @@ import NoteList from '@/components/NoteList/NoteList';
 import Pagination from '@/components/Pagination/Pagination';
 // import NoteForm from '@/components/NoteForm/NoteForm';
 // import Modal from '@/components/Modal/Modal';
-import { fetchNotes } from '@/lib/api';
-import type { FetchNotesResponse } from '@/lib/api';
+import { fetchNotes } from '@/lib/_api';
+import type { FetchNotesResponse } from '@/lib/_api';
 import css from './Notes.client.module.css';
 import Link from 'next/link';
 
