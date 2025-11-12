@@ -14,9 +14,9 @@ import type { NoteTag } from '@/types/note';
 import * as Yup from 'yup';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useId } from 'react';
-import { createNote } from '@/lib/_api';
+import { createNote } from '@/lib/api/clientApi';
 import css from './NoteForm.module.css';
-import { useNoteDraftStore } from '@/lib/stores/noteStore';
+import { useNoteDraftStore } from '@/lib/store/noteStore';
 import { useRouter } from 'next/navigation';
 
 const TAGS = ['Todo', 'Work', 'Personal', 'Meeting', 'Shopping'] as const;

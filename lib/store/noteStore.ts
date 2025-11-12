@@ -7,7 +7,7 @@ import { NewNoteData } from '../api/clientApi';
 const initialDraft: NewNoteData = {
   title: '',
   content: '',
-  tagID: '',
+  tag: 'Todo',
 };
 
 interface NoteDraftStore {

@@ -1,6 +1,9 @@
-import axios from 'axios';
+// lib/api/api.ts
 
-export const nextServer = axios.create({
-  baseURL: 'http://localhost:3000/api',
+import axios from 'axios';
+import { BASE_URL } from '../constants';
+
+export const api = axios.create({
+  baseURL: BASE_URL,
   withCredentials: true,
 });

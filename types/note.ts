@@ -7,6 +7,7 @@ export interface Note {
   id: string;
   title: string;
   content: string;
+  userId: string;
   createdAt: string;
   updatedAt: string;
   tag: NoteTag;
@@ -19,16 +20,6 @@ export interface NewNote {
 export interface NoteListResponse {
   notes: Note[];
   totalPages: number;
-}
-
-export interface User {
-  id: string;
-  email: string;
-  photoUrl: string;
-  userName: string;
-  role: string;
-  createdAt: string;
-  updatedAt: string;
 }
 
 export type NoteTag = (typeof TAGS)[number];

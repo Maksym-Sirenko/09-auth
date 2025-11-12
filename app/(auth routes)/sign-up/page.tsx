@@ -5,7 +5,8 @@
 import axios from "axios";
 import { Note } from "@/types/note";
 import { TAGS } from "@/lib/constants";
-import {NewNote} from "@/types/note";
+import { NewNote } from "@/types/note";
+import css from "SignUp.module.css";
 
 interface AuthUserData {
   email: string;
@@ -45,26 +46,29 @@ const SignUp = () => {
 
   return (
     <>
-            <h1>Sign up</h1>     {' '}
-      <form action={handleSubmit}>
-               {' '}
-        <label>
-                    Username          {' '}
-          <input type="text" name="userName" required />       {' '}
-        </label>
-               {' '}
-        <label>
-                    Email           <input type="email" name="email" required />
-                 {' '}
-        </label>
-               {' '}
-        <label>
-                    Password          {' '}
-          <input type="password" name="password" required />       {' '}
-        </label>
-                <button type="submit">Register</button>     {' '}
-      </form>
-            {error && <p>{error}</p>}   {' '}
+      <main className={css.mainContent}>
+  <h1 className={css.formTitle}>Sign up</h1>
+	<form className={css.form}>
+    <div className={css.formGroup}>
+      <label htmlFor="email">Email</label>
+      <input id="email" type="email" name="email" className={css.input} required />
+    </div>
+
+    <div className={css.formGroup}>
+      <label htmlFor="password">Password</label>
+      <input id="password" type="password" name="password" className={css.input} required />
+    </div>
+
+    <div className={css.actions}>
+      <button type="submit" className={css.submitButton}>
+        Register
+      </button>
+    </div>
+
+    <p className={css.error}>Error</p>
+  </form>
+</main>
+
     </>
   );
 };
