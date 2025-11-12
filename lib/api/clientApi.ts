@@ -1,16 +1,7 @@
 // lib/api/clientAuth.ts
 import { nextServer } from './api';
 import { NoteListResponse, Note } from '@/types/note';
-
-export interface User {
-  id: string;
-  email: string;
-  photoUrl: string;
-  userName: string;
-  role: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import { User } from '@/types/note';
 
 export type RegisterRequest = {
   email: string;

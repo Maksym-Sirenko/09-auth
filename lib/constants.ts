@@ -1,13 +1,16 @@
 export const ALL_NOTES = 'all';
 
-з'ясувати кількість та назви тагів!!!!
-
 export const TAGS = [
   'Todo',
   'Work',
   'Personal',
   'Meeting',
   'Shopping',
+  'Ideas',
+  'Travel',
+  'Finance',
+  'Health',
+  'Important',
 ] as const;
 
 export const VERSEL_URL = 'https://08-zustand-livid-one.vercel.app/';
