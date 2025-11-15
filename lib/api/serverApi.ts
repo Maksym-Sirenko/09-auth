@@ -2,7 +2,7 @@
 import { cookies } from 'next/headers';
 import { api } from './api';
 import { User } from '@/types/user';
-import { Note, NoteListResponse } from '@/types/note';
+import { Note } from '@/types/note';
 
 export type NotesQuery = {
   search?: string;
@@ -11,54 +11,35 @@ export type NotesQuery = {
   tag?: string;
 };
 
-export const fetchNotes = async (
-  params?: NotesQuery,
-): Promise<NoteListResponse> => {
+const cookieHeaders = async () => {
   const cookieStore = await cookies();
-  const { data } = await api.get<NoteListResponse>('/notes', {
-    headers: {
-      Cookie: cookieStore.toString(),
-    },
-    params: {
-      ...params,
-      perPage: params?.perPage || 12,
-    },
-  });
+  return {
+    Cookie: cookieStore.toString(),
+  };
+};
+
+export const fetchNotes = async (params: NotesQuery = {}): Promise<Note[]> => {
+  const headers = await cookieHeaders();
+  const { data } = await api.get<Note[]>('/notes', { headers, params });
   return data;
 };
 
 export const fetchNoteById = async (id: string): Promise<Note> => {
-  const cookieStore = await cookies();
-  const { data } = await api.get<Note>(`/notes/${id}`, {
-    headers: {
-      Cookie: cookieStore.toString(),
-    },
-  });
+  const headers = await cookieHeaders();
+  const { data } = await api.get<Note>(`/notes/${id}`, { headers });
   return data;
 };
 
 export const getMe = async (): Promise<User> => {
-  const cookieStore = await cookies();
-  const { data } = await api.get<User>('/users/me', {
-    headers: {
-      Cookie: cookieStore.toString(),
-    },
-  });
+  const headers = await cookieHeaders();
+  const { data } = await api.get<User>('/users/me', { headers });
   return data;
 };
 
-export const checkSession = async (): Promise<User | null> => {
-  try {
-    const cookieStore = await cookies();
-    const { data } = await api.get<User>('/auth/session', {
-      headers: {
-        Cookie: cookieStore.toString(),
-      },
-    });
-    return data;
-  } catch {
-    return null;
-  }
+export const checkSession = async () => {
+  const headers = await cookieHeaders();
+  const res = await api.get('/auth/session', { headers });
+  return res;
 };
 
 // export const serverLogout = async (): Promise<void> => {

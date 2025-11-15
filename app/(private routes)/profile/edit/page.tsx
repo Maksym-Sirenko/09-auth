@@ -10,14 +10,14 @@ import css from './ProfileEdit.module.css';
 
 const EditProfile = () => {
   const { user, setUser } = useAuthStore();
-  const [userName, setUserName] = useState('');
+  const [username, setUsername] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
 
   useEffect(() => {
     if (user) {
-      setUserName(user.username);
+      setUsername(user.username);
     }
   }, [user]);
 
@@ -27,7 +27,7 @@ const EditProfile = () => {
     setError('');
 
     try {
-      const updatedUser = await updateMe({ userName });
+      const updatedUser = await updateMe({ username });
       setUser(updatedUser);
       router.push('/profile');
     } catch {
@@ -67,8 +67,8 @@ const EditProfile = () => {
                 id="username"
                 type="text"
                 className={css.input}
-                value={userName}
-                onChange={(e) => setUserName(e.target.value)}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
               />
             </div>
 

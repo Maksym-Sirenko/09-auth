@@ -1,18 +1,17 @@
 // app/lib/store/noteStore.ts
-
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { NewNoteData } from '../api/clientApi';
+import type { CreateNoteInput } from '@/lib/api/clientApi';
 
-const initialDraft: NewNoteData = {
+const initialDraft: CreateNoteInput = {
   title: '',
   content: '',
   tag: 'Todo',
 };
 
 interface NoteDraftStore {
-  draft: NewNoteData;
-  setDraft: (note: NewNoteData) => void;
+  draft: CreateNoteInput;
+  setDraft: (note: CreateNoteInput) => void;
   clearDraft: () => void;
 }
 

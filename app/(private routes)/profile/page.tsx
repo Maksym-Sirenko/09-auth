@@ -1,30 +1,14 @@
 // app/(private routes)/profile/page.tsx
 import Image from 'next/image';
 import Link from 'next/link';
-import { getMe } from '@/lib/api/clientApi';
-import css from './profile.module.css';
+import { getMe } from '@/lib/api/serverApi';
+import css from './Profile.module.css';
 
-const ProfilePage = async () => {
-  let user;
-  try {
-    user = await getMe();
-  } catch {
-    user = null;
-  }
-
-  if (!user) {
-    return (
-      <main className={css.mainContent}>
-        <div className={css.profileCard}>
-          <p>User not found or not logged in.</p>
-          <Link href="/sign-in">Go to Sign In</Link>
-        </div>
-      </main>
-    );
-  }
+async function ProfilePage() {
+  const user = await getMe();
 
   return (
-    <main className={css.mainContent}>
+    <section className={css.mainContent}>
       <div className={css.profileCard}>
         <div className={css.header}>
           <h1 className={css.formTitle}>Profile Page</h1>
@@ -32,22 +16,30 @@ const ProfilePage = async () => {
             Edit Profile
           </Link>
         </div>
+
         <div className={css.avatarWrapper}>
           <Image
             src={user.avatar || '/default-avatar.png'}
-            alt="User Avatar"
+            alt={user.username || 'User Avatar'}
             width={120}
             height={120}
             className={css.avatar}
           />
         </div>
-        <div className={css.profileInfo}>
-          <p>Username: {user.username}</p>
-          <p>Email: {user.email}</p>
-        </div>
+
+        <dl className={css.info}>
+          <div className={css.row}>
+            <dt>Username</dt>
+            <dd>{user.username || '—'}</dd>
+          </div>
+          <div className={css.row}>
+            <dt>Email</dt>
+            <dd>{user.email}</dd>
+          </div>
+        </dl>
       </div>
-    </main>
+    </section>
   );
-};
+}
 
 export default ProfilePage;

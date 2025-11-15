@@ -15,6 +15,8 @@ export const TAGS = [
   'Important',
 ] as const;
 
+export type NoteTag = (typeof TAGS)[number];
+
 export const VERSEL_URL = 'https://08-zustand-livid-one.vercel.app/';
 
 export const IMAGE_URL =

@@ -1,37 +1,37 @@
-// app/(auth routes)/sign-up/page.tsx
 'use client';
+
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuthStore } from '@/lib/store/authStore';
+import Link from 'next/link';
 import css from './SignUp.module.css';
+import { useAuthStore } from '@/lib/store/authStore';
 
 const SignUp = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    userName: '',
-  });
+  const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
-  const { signUp } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const signUp = useAuthStore((s) => s.signUp);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setError(null);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(null);
     setIsLoading(true);
-
     try {
-      await signUp(formData.email, formData.password, formData.userName);
+      await signUp(formData.email, formData.password);
       router.push('/profile');
-      router.refresh();
-    } catch (err) {
-      setError('Failed to register. Please try again.');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else if (typeof err === 'string') {
+        setError(err);
+      } else {
+        setError('Something went wrong.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -45,8 +45,8 @@ const SignUp = () => {
           <label htmlFor="email">Email</label>
           <input
             id="email"
-            type="email"
             name="email"
+            type="email"
             className={css.input}
             value={formData.email}
             onChange={handleChange}
@@ -57,23 +57,12 @@ const SignUp = () => {
           <label htmlFor="password">Password</label>
           <input
             id="password"
-            type="password"
             name="password"
+            type="password"
             className={css.input}
             value={formData.password}
             onChange={handleChange}
             required
-          />
-        </div>
-        <div className={css.formGroup}>
-          <label htmlFor="userName">Username (optional)</label>
-          <input
-            id="userName"
-            type="text"
-            name="userName"
-            className={css.input}
-            value={formData.userName}
-            onChange={handleChange}
           />
         </div>
         <div className={css.actions}>
@@ -86,6 +75,9 @@ const SignUp = () => {
           </button>
         </div>
         {error && <p className={css.error}>{error}</p>}
+        <p className={css.helper}>
+          Already have an account? <Link href="/sign-in">Sign in</Link>
+        </p>
       </form>
     </main>
   );

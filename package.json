@@ -1,17 +1,17 @@
 {
-  "name": "06-notehub-nextjs",
+  "name": "09-auth",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "dev": "next dev",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.6",
     "@tanstack/react-query-devtools": "^5.90.2",
-    "axios": "^1.12.2",
+    "axios": "^1.13.2",
     "clsx": "^2.1.1",
     "cookie": "^1.0.2",
     "formik": "^2.4.6",

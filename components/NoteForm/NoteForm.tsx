@@ -1,5 +1,3 @@
-// app/components/NoteForm/NoteForm.tsx
-
 'use client';
 
 import {
@@ -10,7 +8,6 @@ import {
   FieldProps,
   FormikHelpers,
 } from 'formik';
-import type { NoteTag } from '@/types/note';
 import * as Yup from 'yup';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useId } from 'react';
@@ -18,36 +15,35 @@ import { createNote } from '@/lib/api/clientApi';
 import css from './NoteForm.module.css';
 import { useNoteDraftStore } from '@/lib/store/noteStore';
 import { useRouter } from 'next/navigation';
-import { TAGS } from '@/lib/constants';
-import { NewNoteData } from '@/lib/api/clientApi';
+import { TAGS, NoteTag } from '@/lib/constants';
+import { NoteFormValues, CreateNoteInput } from '@/types/note';
 
 interface NoteFormProps {
   onClose?: () => void;
   onSuccess?: () => void;
 }
 
-interface NoteFormValues extends NewNoteData {
-  tag: NoteTag;
-}
-
 const validationSchema = Yup.object({
   title: Yup.string()
     .min(3, 'Title too short')
-    .max(50, 'Title is too long')
+    .max(50, 'Title too long')
     .required('Title is required'),
   content: Yup.string().max(500, 'Content is too long'),
-  tag: Yup.string().oneOf(TAGS).required('Tag is required'),
+  tag: Yup.mixed<NoteTag>().oneOf(TAGS).required('Tag is required'),
 });
+
+function isNoteTag(tag: string): tag is NoteTag {
+  return TAGS.includes(tag as NoteTag);
+}
 
 const NoteForm = ({ onClose, onSuccess }: NoteFormProps) => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const fieldId = useId();
-
   const { draft, setDraft, clearDraft } = useNoteDraftStore();
 
   const { mutateAsync, isPending } = useMutation({
-    mutationFn: createNote,
+    mutationFn: (payload: CreateNoteInput) => createNote(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notes'] });
       clearDraft();
@@ -68,7 +64,7 @@ const NoteForm = ({ onClose, onSuccess }: NoteFormProps) => {
   const initialDraftValues: NoteFormValues = {
     title: draft?.title ?? '',
     content: draft?.content ?? '',
-    tag: (draft?.tag as NoteTag) ?? 'Todo',
+    tag: draft?.tag ?? 'Todo',
   };
 
   return (
@@ -98,6 +94,7 @@ const NoteForm = ({ onClose, onSuccess }: NoteFormProps) => {
             </Field>
             <ErrorMessage name="title" component="span" className={css.error} />
           </div>
+
           <div className={css.formGroup}>
             <label htmlFor={`${fieldId}-content`}>Content</label>
             <Field name="content">
@@ -120,6 +117,7 @@ const NoteForm = ({ onClose, onSuccess }: NoteFormProps) => {
               className={css.error}
             />
           </div>
+
           <div className={css.formGroup}>
             <label htmlFor={`${fieldId}-tag`}>Tag</label>
             <Field name="tag">
@@ -130,7 +128,8 @@ const NoteForm = ({ onClose, onSuccess }: NoteFormProps) => {
                   className={css.select}
                   onChange={(e) => {
                     field.onChange(e);
-                    setDraft({ ...draft, tag: e.target.value as NoteTag });
+                    const value = e.target.value;
+                    if (isNoteTag(value)) setDraft({ ...draft, tag: value });
                   }}
                 >
                   {TAGS.map((t) => (

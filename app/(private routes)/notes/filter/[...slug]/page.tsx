@@ -1,24 +1,30 @@
-// app/(private routes)/notes/filter/[...slug]/page.tsx
-
 import {
   dehydrate,
   HydrationBoundary,
   QueryClient,
 } from '@tanstack/react-query';
 import { fetchNotes } from '@/lib/api/clientApi';
-import { PER_PAGE } from '@/lib/constants';
+import {
+  PER_PAGE,
+  ALL_NOTES,
+  IMAGE_URL,
+  VERSEL_URL,
+  NoteTag,
+} from '@/lib/constants';
 import NotesClient from './Notes.client';
-import { ALL_NOTES } from '@/lib/constants';
 import type { Metadata } from 'next';
-import { IMAGE_URL, VERSEL_URL } from '@/lib/constants';
+import type { NoteListResponse } from '@/types/note';
+
+interface Props {
+  params: { slug: string[] };
+}
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string[] }>;
+  params: Props['params'];
 }): Promise<Metadata> {
-  const resolved = await params;
-  const slug = resolved.slug?.[0] ?? 'all';
+  const slug = params.slug?.[0] ?? 'all';
 
   return {
     title: `Notes - ${slug}`,
@@ -27,37 +33,35 @@ export async function generateMetadata({
       title: `Notes - ${slug}`,
       description: `Notes filtered by ${slug}`,
       url: `${VERSEL_URL}/notes/filter/${slug}`,
-      images: [
-        {
-          url: IMAGE_URL,
-          width: 1200,
-          height: 630,
-          alt: 'Notes',
-        },
-      ],
+      images: [{ url: IMAGE_URL, width: 1200, height: 630, alt: 'Notes' }],
     },
   };
 }
 
-interface Props {
-  params: Promise<{ slug: string[] }>;
-}
-
 const NotesPage = async ({ params }: Props) => {
-  const { slug } = await params;
+  const slug = params.slug?.[0] ?? ALL_NOTES;
   const queryClient = new QueryClient();
 
-  const tag = slug[0] === ALL_NOTES ? undefined : slug[0];
+  const tag: NoteTag | undefined =
+    slug === ALL_NOTES ? undefined : (slug as NoteTag);
 
-  await queryClient.prefetchQuery({
-    queryKey: ['notes', { search: '', tag, page: 1, perPage: PER_PAGE }],
-    queryFn: () =>
-      fetchNotes({
+  await queryClient.prefetchQuery<NoteListResponse>({
+    queryKey: ['notes', '', 1, tag],
+    queryFn: async () => {
+      const res = await fetchNotes({
         search: '',
-        tag: tag || '',
+        tag: tag,
         page: 1,
         perPage: PER_PAGE,
-      }),
+      });
+
+      return {
+        notes: res.items,
+        totalPages: res.totalPages,
+        page: res.page,
+        perPage: PER_PAGE,
+      } as NoteListResponse;
+    },
   });
 
   return (

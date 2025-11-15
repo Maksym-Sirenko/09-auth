@@ -1,5 +1,5 @@
-// app/(auth routes)/sign-in/page.tsx
 'use client';
+
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import css from './SignIn.module.css';
@@ -10,23 +10,20 @@ const SignIn = () => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { signIn } = useAuthStore();
+  const signIn = useAuthStore((s) => s.signIn);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setError(null);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    setError(null);
-
     try {
       await signIn(formData.email, formData.password);
       router.push('/profile');
-      router.refresh();
-    } catch (err) {
+    } catch {
       setError('Invalid email or password');
     } finally {
       setIsLoading(false);
@@ -41,8 +38,8 @@ const SignIn = () => {
           <label htmlFor="email">Email</label>
           <input
             id="email"
-            type="email"
             name="email"
+            type="email"
             className={css.input}
             value={formData.email}
             onChange={handleChange}
@@ -53,8 +50,8 @@ const SignIn = () => {
           <label htmlFor="password">Password</label>
           <input
             id="password"
-            type="password"
             name="password"
+            type="password"
             className={css.input}
             value={formData.password}
             onChange={handleChange}

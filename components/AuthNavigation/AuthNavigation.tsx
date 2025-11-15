@@ -1,19 +1,24 @@
-// components/AuthNavigation/AuthNavigation.tsx
 'use client';
+
 import Link from 'next/link';
-import { useAuthStore } from '@/lib/store/authStore';
+import { useRouter } from 'next/navigation';
 import css from './AuthNavigation.module.css';
+import { useAuthStore } from '@/lib/store/authStore';
+import { logout as apiLogout } from '@/lib/api/clientApi';
 
 const AuthNavigation = () => {
-  const { user, signOut, isAuthenticated } = useAuthStore();
+  const router = useRouter();
+
+  const user = useAuthStore((s) => s.user);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const logout = useAuthStore((s) => s.logout);
 
   const handleLogout = async () => {
     try {
-      await signOut();
-      window.location.href = '/sign-in';
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
+      await apiLogout();
+    } catch {}
+    logout();
+    router.push('/sign-in');
   };
 
   return (
@@ -31,8 +36,12 @@ const AuthNavigation = () => {
               </Link>
             </li>
             <li className={css.navigationItem}>
-              <p className={css.userEmail}>{user?.email}</p>
-              <button className={css.logoutButton} onClick={handleLogout}>
+              <p className={css.userEmail}>{user?.email ?? '—'}</p>
+              <button
+                className={css.logoutButton}
+                onClick={handleLogout}
+                type="button"
+              >
                 Logout
               </button>
             </li>

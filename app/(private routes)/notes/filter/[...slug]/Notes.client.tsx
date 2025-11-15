@@ -1,4 +1,3 @@
-// app/(private routes)/notes/filter/[...slug]/Notes.client.tsx
 'use client';
 
 import { useState, ChangeEvent, useEffect } from 'react';
@@ -11,17 +10,17 @@ import { fetchNotes } from '@/lib/api/clientApi';
 import type { NoteListResponse } from '@/types/note';
 import css from './Notes.client.module.css';
 import Link from 'next/link';
-import { PER_PAGE } from '@/lib/constants';
+import { PER_PAGE, TAGS, NoteTag } from '@/lib/constants';
 
 interface Props {
-  tag?: string;
+  tag?: NoteTag;
 }
 
-const NotesClient = ({ tag = '' }: Props) => {
+const NotesClient = ({ tag }: Props) => {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [page, setPage] = useState(1);
-  const [currentTag, setCurrentTag] = useState(tag);
+  const [currentTag, setCurrentTag] = useState<NoteTag | undefined>(tag);
 
   useEffect(() => {
     setCurrentTag(tag);
@@ -43,14 +42,30 @@ const NotesClient = ({ tag = '' }: Props) => {
 
   const { data, isLoading, isError } = useQuery<NoteListResponse, Error>({
     queryKey: ['notes', debouncedSearch, page, currentTag],
-    queryFn: () =>
-      fetchNotes({
+    queryFn: async () => {
+      const res = await fetchNotes({
         search: debouncedSearch,
+        tag: currentTag,
         page,
         perPage: PER_PAGE,
-        tag: currentTag,
-      }),
-    placeholderData: (previousData) => previousData,
+      });
+
+      return {
+        notes: res.items,
+        totalPages: res.totalPages,
+        total: res.totalItems,
+        page: res.page,
+        perPage: res.perPage,
+      } as NoteListResponse;
+    },
+
+    placeholderData: {
+      notes: [],
+      totalPages: 1,
+      total: 0,
+      page,
+      perPage: PER_PAGE,
+    },
   });
 
   if (isLoading) return <p>Loading notes...</p>;
@@ -73,7 +88,7 @@ const NotesClient = ({ tag = '' }: Props) => {
         />
       )}
 
-      {data.notes.length ? (
+      {data.notes.length > 0 ? (
         <NoteList notes={data.notes} />
       ) : (
         <p>No notes found</p>
