@@ -1,18 +1,14 @@
+// app/(private routes)/notes/filter/[...slug]/Notes.client.tsx
 'use client';
 
 import { useState, ChangeEvent, useEffect } from 'react';
-import {
-  useQuery,
-  // useQueryClient
-} from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useDebouncedCallback } from 'use-debounce';
 import SearchBox from '@/components/SearchBox/SearchBox';
 import NoteList from '@/components/NoteList/NoteList';
 import Pagination from '@/components/Pagination/Pagination';
-// import NoteForm from '@/components/NoteForm/NoteForm';
-// import Modal from '@/components/Modal/Modal';
-import { fetchNotes } from '@/lib/_api';
-import type { FetchNotesResponse } from '@/lib/_api';
+import { fetchNotes } from '@/lib/api/clientApi';
+import type { NoteListResponse } from '@/types/note';
 import css from './Notes.client.module.css';
 import Link from 'next/link';
 
@@ -24,9 +20,7 @@ const NotesClient = ({ tag = '' }: Props) => {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [page, setPage] = useState(1);
-  // const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentTag, setCurrentTag] = useState(tag);
-  // const queryClient = useQueryClient();
 
   useEffect(() => {
     setCurrentTag(tag);
@@ -44,21 +38,11 @@ const NotesClient = ({ tag = '' }: Props) => {
     debounced(value);
   };
 
-  const { data, isLoading, isError } = useQuery<FetchNotesResponse, Error>({
+  const { data, isLoading, isError } = useQuery<NoteListResponse, Error>({
     queryKey: ['notes', debouncedSearch, page, currentTag],
-    queryFn: () =>
-      fetchNotes({
-        search: debouncedSearch,
-        page,
-        tag: currentTag,
-      }),
+    queryFn: () => fetchNotes(debouncedSearch, page, currentTag),
     placeholderData: (previousData) => previousData,
   });
-
-  // const handleCreateSuccess = () => {
-  //   setIsModalOpen(false);
-  //   queryClient.invalidateQueries({ queryKey: ['notes'] });
-  // };
 
   if (isLoading) return <p>Loading notes...</p>;
   if (isError || !data) return <p>Could not fetch the list of notes.</p>;

@@ -1,10 +1,50 @@
 // app/(private routes)/profile/edit/page.tsx
 'use client';
 
-import AvatarPicker from '@/components/AvatarPicker/AvatarPicker';
-import css from 'profileEdit.module.css';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import { useAuthStore } from '@/lib/store/authStore';
+import { updateMe } from '@/lib/api/clientApi';
+import css from './ProfileEdit.module.css';
 
 const EditProfile = () => {
+  const { user, setUser } = useAuthStore();
+  const [userName, setUserName] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user) {
+      setUserName(user.userName);
+    }
+  }, [user]);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const updatedUser = await updateMe({ userName });
+      setUser(updatedUser);
+      router.push('/profile');
+    } catch {
+      setError('Failed to update profile. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCancel = () => {
+    router.push('/profile');
+  };
+
+  if (!user) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className={css.editProfile}>
       <h1>Edit profile</h1>
@@ -12,35 +52,50 @@ const EditProfile = () => {
         <div className={css.profileCard}>
           <h1 className={css.formTitle}>Edit Profile</h1>
 
-          <img
-            src="avatar"
+          <Image
+            src={user.avatar || '/default-avatar.png'}
             alt="User Avatar"
             width={120}
             height={120}
             className={css.avatar}
           />
 
-          <form className={css.profileInfo}>
+          <form className={css.profileInfo} onSubmit={handleSubmit}>
             <div className={css.usernameWrapper}>
               <label htmlFor="username">Username:</label>
-              <input id="username" type="text" className={css.input} />
+              <input
+                id="username"
+                type="text"
+                className={css.input}
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
+              />
             </div>
 
-            <p>Email: user_email@example.com</p>
+            <p>Email: {user.email}</p>
+            {error && <p className={css.error}>{error}</p>}
 
             <div className={css.actions}>
-              <button type="submit" className={css.saveButton}>
-                Save
+              <button
+                type="submit"
+                className={css.saveButton}
+                disabled={isLoading}
+              >
+                {isLoading ? 'Saving...' : 'Save'}
               </button>
-              <button type="button" className={css.cancelButton}>
+              <button
+                type="button"
+                className={css.cancelButton}
+                onClick={handleCancel}
+                disabled={isLoading}
+              >
                 Cancel
               </button>
             </div>
           </form>
         </div>
+        {/* <AvatarPicker /> */}
       </main>
-
-      <AvatarPicker />
     </div>
   );
 };

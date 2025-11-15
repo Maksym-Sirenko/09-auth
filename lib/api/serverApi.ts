@@ -1,48 +1,64 @@
 // lib/api/serverApi.ts
-
 import { cookies } from 'next/headers';
 import { api } from './api';
 import { User } from '@/types/user';
-import { Note } from '@/types/note';
+import { Note, NoteListResponse } from '@/types/note';
 
-export const fetchNotes = async (): Promise<Note[] | null> => {
+export type NotesQuery = {
+  search?: string;
+  page?: number;
+  perPage?: number;
+  tag?: string;
+};
+
+export const fetchNotes = async (
+  params?: NotesQuery,
+): Promise<NoteListResponse> => {
   const cookieStore = await cookies();
-  const { data } = await api.get<Note[]>('/notes', {
+  const { data } = await api.get<NoteListResponse>('/notes', {
     headers: {
-      cookie: cookieStore.toString(),
+      Cookie: cookieStore.toString(),
+    },
+    params: {
+      ...params,
+      perPage: params?.perPage || 12,
     },
   });
   return data;
 };
 
-export const fetchNoteById = async (id: string): Promise<Note | null> => {
+export const fetchNoteById = async (id: string): Promise<Note> => {
   const cookieStore = await cookies();
   const { data } = await api.get<Note>(`/notes/${id}`, {
     headers: {
-      cookie: cookieStore.toString(),
+      Cookie: cookieStore.toString(),
     },
   });
   return data;
 };
 
-export const getMe = async (): Promise<User | null> => {
+export const getMe = async (): Promise<User> => {
   const cookieStore = await cookies();
-  const { data } = await api.get<User>('/auth/me', {
+  const { data } = await api.get<User>('/users/me', {
     headers: {
-      cookie: cookieStore.toString(),
+      Cookie: cookieStore.toString(),
     },
   });
   return data;
 };
 
-export const checkSession = async (): Promise<boolean> => {
-  const cookieStore = await cookies();
-  const { data } = await api.get<{ success: boolean }>('/auth/session', {
-    headers: {
-      cookie: cookieStore.toString(),
-    },
-  });
-  return data.success;
+export const checkSession = async (): Promise<User | null> => {
+  try {
+    const cookieStore = await cookies();
+    const { data } = await api.get<User>('/auth/session', {
+      headers: {
+        Cookie: cookieStore.toString(),
+      },
+    });
+    return data;
+  } catch {
+    return null;
+  }
 };
 
 // export const serverLogout = async (): Promise<void> => {

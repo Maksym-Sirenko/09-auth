@@ -1,0 +1,23 @@
+/* app/not-found.module.css */
+.wrapper {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.title {
+    font-size: 32px;
+    line-height: 1.2;
+}
+
+.text {
+    opacity: 0.8;
+    max-width: 400px;
+}
+
+.links {
+    margin-top: 16px;
+    display: flex;
+    gap: 12px;
+}

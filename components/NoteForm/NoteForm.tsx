@@ -18,18 +18,16 @@ import { createNote } from '@/lib/api/clientApi';
 import css from './NoteForm.module.css';
 import { useNoteDraftStore } from '@/lib/store/noteStore';
 import { useRouter } from 'next/navigation';
-
-const TAGS = ['Todo', 'Work', 'Personal', 'Meeting', 'Shopping'] as const;
+import { TAGS } from '@/lib/constants';
+import { NewNoteData } from '@/lib/api/clientApi';
 
 interface NoteFormProps {
   onClose?: () => void;
   onSuccess?: () => void;
 }
 
-interface NoteFormValues {
-  title: string;
-  content: string;
-  tag: NoteTag | string;
+interface NoteFormValues extends NewNoteData {
+  tag: NoteTag;
 }
 
 const validationSchema = Yup.object({
@@ -38,9 +36,7 @@ const validationSchema = Yup.object({
     .max(50, 'Title is too long')
     .required('Title is required'),
   content: Yup.string().max(500, 'Content is too long'),
-  tag: Yup.mixed<NoteTag>()
-    .oneOf(TAGS as readonly NoteTag[])
-    .required('Tag is required'),
+  tag: Yup.string().oneOf(TAGS).required('Tag is required'),
 });
 
 const NoteForm = ({ onClose, onSuccess }: NoteFormProps) => {
@@ -95,7 +91,7 @@ const NoteForm = ({ onClose, onSuccess }: NoteFormProps) => {
                   className={css.input}
                   onChange={(e) => {
                     field.onChange(e);
-                    setDraft({ title: e.target.value });
+                    setDraft({ ...draft, title: e.target.value });
                   }}
                 />
               )}
@@ -113,7 +109,7 @@ const NoteForm = ({ onClose, onSuccess }: NoteFormProps) => {
                   rows={8}
                   onChange={(e) => {
                     field.onChange(e);
-                    setDraft({ content: e.target.value });
+                    setDraft({ ...draft, content: e.target.value });
                   }}
                 />
               )}
@@ -134,7 +130,7 @@ const NoteForm = ({ onClose, onSuccess }: NoteFormProps) => {
                   className={css.select}
                   onChange={(e) => {
                     field.onChange(e);
-                    setDraft({ tag: e.target.value as NoteTag });
+                    setDraft({ ...draft, tag: e.target.value as NoteTag });
                   }}
                 >
                   {TAGS.map((t) => (

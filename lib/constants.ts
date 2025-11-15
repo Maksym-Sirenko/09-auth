@@ -1,3 +1,5 @@
+// lib/constants.ts
+
 export const ALL_NOTES = 'all';
 
 export const TAGS = [
@@ -18,6 +20,6 @@ export const VERSEL_URL = 'https://08-zustand-livid-one.vercel.app/';
 export const IMAGE_URL =
   'https://ac.goit.global/fullstack/react/notehub-og-meta.jpg';
 
-export const BASE_URL = process.env.NEXT_PUBLIC_API_URL + '/api';
+export const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || '') + '/api';
 
 export const PER_PAGE = 12;

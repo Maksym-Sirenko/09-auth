@@ -1,7 +1,6 @@
-import { BASE_URL } from '@/lib/constants';
 import axios from 'axios';
 
 export const api = axios.create({
-  baseURL: BASE_URL,
+  baseURL: 'https://notehub-api.goit.study',
   withCredentials: true,
 });

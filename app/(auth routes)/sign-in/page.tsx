@@ -1,23 +1,19 @@
+// app/(auth routes)/sign-in/page.tsx
+
 'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
-import css from 'SignIn.module.css';
-import { cookies } from 'next/headers';
-
-interface AuthUserData {
-  email: string;
-  password: string;
-}
+import css from './SignIn.module.css';
+import { useAuthStore } from '@/lib/store/authStore';
+import { login } from '@/lib/api/clientApi';
 
 const SignIn = () => {
-  const [formData, setFormData] = useState<AuthUserData>({
-    email: '',
-    password: '',
-  });
+  const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const setUser = useAuthStore((s) => s.setUser); // ✅ Беремо тільки setUser
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -26,11 +22,22 @@ const SignIn = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+
     try {
-      const response = await axios.post('/api/auth/signin', formData);
-      router.push('/dashboard');
-    } catch (error) {
+      const user = await login({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      setUser(user);
+
+      window.location.href = '/profile';
+    } catch {
       setError('Invalid email or password');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -47,6 +54,8 @@ const SignIn = () => {
               type="email"
               name="email"
               className={css.input}
+              value={formData.email}
+              onChange={handleChange}
               required
             />
           </div>
@@ -58,17 +67,22 @@ const SignIn = () => {
               type="password"
               name="password"
               className={css.input}
+              value={formData.password}
+              onChange={handleChange}
               required
             />
           </div>
 
           <div className={css.actions}>
-            <button type="submit" className={css.submitButton}>
-              Log in
+            <button
+              type="submit"
+              className={css.submitButton}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Signing in…' : 'Log in'}
             </button>
           </div>
-
-          <p className={css.error}>{error}</p>
+          {error && <p className={css.error}>{error}</p>}
         </form>
       </main>
     </>

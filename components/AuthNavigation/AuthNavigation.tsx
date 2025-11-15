@@ -1,7 +1,18 @@
+// components/AuthNavigation/AuthNavigation.tsx
+'use client';
+
+import Link from 'next/link';
+import { useAuthStore } from '@/lib/store/authStore';
 import css from './AuthNavigation.module.css';
 
 const AuthNavigation = () => {
-  const isAuthenticated = false;
+  const { user, signOut } = useAuthStore();
+  const isAuthenticated = !!user;
+
+  const handleLogout = async () => {
+    await signOut();
+    window.location.href = '/sign-in';
+  };
 
   return (
     <nav className={css.navigation}>
@@ -9,40 +20,42 @@ const AuthNavigation = () => {
         {isAuthenticated ? (
           <>
             <li className={css.navigationItem}>
-              <a
+              <Link
                 href="/profile"
                 prefetch={false}
                 className={css.navigationLink}
               >
                 Profile
-              </a>
+              </Link>
             </li>
 
             <li className={css.navigationItem}>
-              <p className={css.userEmail}>User email</p>
-              <button className={css.logoutButton}>Logout</button>
+              <p className={css.userEmail}>{user?.email}</p>
+              <button className={css.logoutButton} onClick={handleLogout}>
+                Logout
+              </button>
             </li>
           </>
         ) : (
           <>
             <li className={css.navigationItem}>
-              <a
+              <Link
                 href="/sign-in"
                 prefetch={false}
                 className={css.navigationLink}
               >
                 Login
-              </a>
+              </Link>
             </li>
 
             <li className={css.navigationItem}>
-              <a
+              <Link
                 href="/sign-up"
                 prefetch={false}
                 className={css.navigationLink}
               >
                 Sign up
-              </a>
+              </Link>
             </li>
           </>
         )}

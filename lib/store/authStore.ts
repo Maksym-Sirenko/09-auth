@@ -1,5 +1,4 @@
 // lib/store/authStore.ts
-
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { User } from '@/types/user';
@@ -27,17 +26,29 @@ export const useAuthStore = create<AuthState>()(
           set({ user: null });
         }
       },
-      signIn: async (email, password) => {
-        const data = await login({ email, password });
-        set({ user: data });
+      signIn: async (email: string, password: string) => {
+        try {
+          const data = await login({ email, password });
+          set({ user: data });
+        } catch {
+          throw new Error('Login failed');
+        }
       },
-      signUp: async (email, password, userName) => {
-        const data = await register({ email, password, userName });
-        set({ user: data });
+      signUp: async (email: string, password: string, userName?: string) => {
+        try {
+          const data = await register({ email, password, userName });
+          set({ user: data });
+        } catch {
+          throw new Error('Registration failed');
+        }
       },
       signOut: async () => {
-        await logout();
-        set({ user: null });
+        try {
+          await logout();
+          set({ user: null });
+        } catch {
+          throw new Error('Logout failed');
+        }
       },
     }),
     {

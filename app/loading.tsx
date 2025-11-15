@@ -1,3 +1,5 @@
+// app/loading.tsx
+
 import css from './loading.module.css';
 
 const Loading = () => {

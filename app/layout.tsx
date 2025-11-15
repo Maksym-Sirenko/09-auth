@@ -1,3 +1,5 @@
+// app/layout.tsx
+
 import TanStackProvider from '@/components/TanStackProvider/TanStackProvider';
 import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
@@ -5,6 +7,7 @@ import './globals.css';
 import { Roboto } from 'next/font/google';
 import type { Metadata } from 'next';
 import { VERSEL_URL, IMAGE_URL } from '@/lib/constants';
+import AuthProvider from '@/components/AuthProvider/AuthProvider';
 
 const roboto = Roboto({
   weight: ['300', '400', '500', '700'],
@@ -43,7 +46,6 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-  modal,
 }: {
   children: React.ReactNode;
   modal?: React.ReactNode;
@@ -52,12 +54,11 @@ export default function RootLayout({
     <html lang="en" className={roboto.variable}>
       <body>
         <TanStackProvider>
-          <Header />
-          <main>
-            {children}
-            {modal}
-          </main>
-          <Footer />
+          <AuthProvider>
+            <Header />
+            <main>{children}</main>
+            <Footer />
+          </AuthProvider>
         </TanStackProvider>
       </body>
     </html>
