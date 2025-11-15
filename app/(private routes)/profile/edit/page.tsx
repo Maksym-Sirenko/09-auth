@@ -17,7 +17,7 @@ const EditProfile = () => {
 
   useEffect(() => {
     if (user) {
-      setUserName(user.userName);
+      setUserName(user.username);
     }
   }, [user]);
 

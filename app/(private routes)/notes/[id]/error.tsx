@@ -1,3 +1,5 @@
+// app/(private routes)/notes/[id]/error.tsx
+
 'use client';
 
 import css from './error.module.css';

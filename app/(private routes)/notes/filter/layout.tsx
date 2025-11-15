@@ -1,3 +1,5 @@
+// app/(private routes)/notes/filter/layout.tsx
+
 import css from './layout.module.css';
 
 interface Props {

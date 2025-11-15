@@ -42,7 +42,7 @@ const ProfilePage = async () => {
           />
         </div>
         <div className={css.profileInfo}>
-          <p>Username: {user.userName}</p>
+          <p>Username: {user.username}</p>
           <p>Email: {user.email}</p>
         </div>
       </div>

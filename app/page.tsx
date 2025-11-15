@@ -1,3 +1,5 @@
+// app/page.tsx
+
 import css from './page.module.css';
 import Link from 'next/link';
 

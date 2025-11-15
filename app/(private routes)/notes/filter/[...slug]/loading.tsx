@@ -1,3 +1,5 @@
+// app/(private routes)/notes/filter/[...slug]/loading.tsx
+
 import css from './loading.module.css';
 
 const Loading = () => {

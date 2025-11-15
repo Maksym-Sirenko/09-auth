@@ -7,8 +7,13 @@ const authRoutes = ['/sign-in', '/sign-up'];
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  const accessToken = request.cookies.get('accessToken');
-  const hasToken = !!accessToken;
+  const hasAuthCookie =
+    request.cookies.get('session') ||
+    request.cookies.get('accessToken') ||
+    request.cookies.get('token') ||
+    request.cookies.get('refreshToken');
+
+  const hasToken = !!hasAuthCookie;
 
   const isPrivateRoute = privateRoutes.some((route) =>
     pathname.startsWith(route),

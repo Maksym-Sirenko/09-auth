@@ -1,3 +1,5 @@
+// app/(private routes)/notes/[id]/page.tsx
+
 import { Metadata } from 'next';
 import { fetchNoteById } from '@/lib/api/serverApi';
 import {

@@ -1,17 +1,19 @@
 // components/AuthNavigation/AuthNavigation.tsx
 'use client';
-
 import Link from 'next/link';
 import { useAuthStore } from '@/lib/store/authStore';
 import css from './AuthNavigation.module.css';
 
 const AuthNavigation = () => {
-  const { user, signOut } = useAuthStore();
-  const isAuthenticated = !!user;
+  const { user, signOut, isAuthenticated } = useAuthStore();
 
   const handleLogout = async () => {
-    await signOut();
-    window.location.href = '/sign-in';
+    try {
+      await signOut();
+      window.location.href = '/sign-in';
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
   };
 
   return (
@@ -28,7 +30,6 @@ const AuthNavigation = () => {
                 Profile
               </Link>
             </li>
-
             <li className={css.navigationItem}>
               <p className={css.userEmail}>{user?.email}</p>
               <button className={css.logoutButton} onClick={handleLogout}>
@@ -47,7 +48,6 @@ const AuthNavigation = () => {
                 Login
               </Link>
             </li>
-
             <li className={css.navigationItem}>
               <Link
                 href="/sign-up"

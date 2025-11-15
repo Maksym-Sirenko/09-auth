@@ -1,6 +1,5 @@
 // components/AuthProvider/AuthProvider.tsx
 'use client';
-
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/lib/store/authStore';
 
@@ -9,20 +8,19 @@ export default function AuthProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const { fetchUser } = useAuthStore();
+  const { checkAuth } = useAuthStore();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const initAuth = async () => {
       try {
-        await fetchUser();
+        await checkAuth();
       } finally {
         setIsLoading(false);
       }
     };
-
     initAuth();
-  }, [fetchUser]);
+  }, [checkAuth]);
 
   if (isLoading) {
     return (

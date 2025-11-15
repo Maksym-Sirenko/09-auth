@@ -1,3 +1,5 @@
+// app/(private routes)/notes/filter/[...slug]/page.tsx
+
 import {
   dehydrate,
   HydrationBoundary,

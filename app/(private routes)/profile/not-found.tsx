@@ -1,3 +1,5 @@
+// app/(private routes)/profile/not-found.tsx
+
 import Link from 'next/link';
 import styles from './NotFound.module.css';
 

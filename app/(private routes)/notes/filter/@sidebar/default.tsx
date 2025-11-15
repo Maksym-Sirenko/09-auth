@@ -1,3 +1,5 @@
+// app/(private routes)/notes/filter/@sidebar/default.tsx
+
 import Link from 'next/link';
 import { ALL_NOTES, TAGS } from '@/lib/constants';
 import css from './default.module.css';
