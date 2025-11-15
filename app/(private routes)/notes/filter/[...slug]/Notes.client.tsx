@@ -11,6 +11,7 @@ import { fetchNotes } from '@/lib/api/clientApi';
 import type { NoteListResponse } from '@/types/note';
 import css from './Notes.client.module.css';
 import Link from 'next/link';
+import { PER_PAGE } from '@/lib/constants';
 
 interface Props {
   tag?: string;
@@ -25,6 +26,8 @@ const NotesClient = ({ tag = '' }: Props) => {
   useEffect(() => {
     setCurrentTag(tag);
     setPage(1);
+    setSearch('');
+    setDebouncedSearch('');
   }, [tag]);
 
   const debounced = useDebouncedCallback((value: string) => {
@@ -40,7 +43,13 @@ const NotesClient = ({ tag = '' }: Props) => {
 
   const { data, isLoading, isError } = useQuery<NoteListResponse, Error>({
     queryKey: ['notes', debouncedSearch, page, currentTag],
-    queryFn: () => fetchNotes(debouncedSearch, page, currentTag),
+    queryFn: () =>
+      fetchNotes({
+        search: debouncedSearch,
+        page,
+        perPage: PER_PAGE,
+        tag: currentTag,
+      }),
     placeholderData: (previousData) => previousData,
   });
 

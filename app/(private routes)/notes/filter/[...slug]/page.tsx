@@ -13,9 +13,11 @@ import { IMAGE_URL, VERSEL_URL } from '@/lib/constants';
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string[] };
+  params: Promise<{ slug: string[] }>;
 }): Promise<Metadata> {
-  const slug = params.slug?.[0] ?? 'all';
+  const resolved = await params;
+  const slug = resolved.slug?.[0] ?? 'all';
+
   return {
     title: `Notes - ${slug}`,
     description: `Notes filtered by ${slug}`,

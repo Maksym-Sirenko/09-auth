@@ -1,24 +1,23 @@
 // app/(private routes)/profile/page.tsx
-'use client';
-
-import Link from 'next/link';
 import Image from 'next/image';
-import { useAuthStore } from '@/lib/store/authStore';
-import { useEffect } from 'react';
+import Link from 'next/link';
+import { getMe } from '@/lib/api/clientApi';
 import css from './profile.module.css';
 
-const ProfilePage = () => {
-  const { user, fetchUser } = useAuthStore();
-
-  useEffect(() => {
-    fetchUser();
-  }, [fetchUser]);
+const ProfilePage = async () => {
+  let user;
+  try {
+    user = await getMe();
+  } catch {
+    user = null;
+  }
 
   if (!user) {
     return (
       <main className={css.mainContent}>
         <div className={css.profileCard}>
-          <p>Loading...</p>
+          <p>User not found or not logged in.</p>
+          <Link href="/sign-in">Go to Sign In</Link>
         </div>
       </main>
     );

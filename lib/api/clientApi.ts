@@ -15,14 +15,6 @@ export type LoginRequest = {
   password: string;
 };
 
-// export type Tag = {
-//   id: string;
-//   name: string;
-//   description?: string;
-//   createdAt: string;
-//   updatedAt: string;
-// };
-
 export type NewNoteData = {
   title: string;
   content: string;
@@ -34,22 +26,35 @@ export type UpdateUserRequest = {
   imageUrl?: string;
 };
 
-// type CheckSessionRequest = { success: boolean };
+export interface FetchNotesParams {
+  search: string;
+  tag?: string;
+  page: number;
+  perPage: number;
+}
 
-export const fetchNotes = async (
-  search?: string,
-  page?: number,
-  tag?: string,
-) => {
-  const { data: res } = await api.get<NoteListResponse>('/notes', {
-    params: { search, page, perPage: 12, tag },
+// --- Notes ---
+export const fetchNotes = async (params: FetchNotesParams) => {
+  const { search, tag, page, perPage } = params;
+  const token = localStorage.getItem('token');
+  const query = new URLSearchParams({
+    search,
+    tag: tag || '',
+    page: page.toString(),
+    perPage: perPage.toString(),
   });
-  return res;
+  const res = await fetch(`https://notehub-api.goit.study/notes?${query}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  if (!res.ok) throw new Error('Failed to fetch notes');
+  return res.json();
 };
 
 export const fetchNoteById = async (noteId: string) => {
-  const { data: res } = await api.get<Note>(`/notes/${noteId}`);
-  return res;
+  const { data } = await api.get<Note>(`/notes/${noteId}`);
+  return data;
 };
 
 export const createNote = async (data: NewNoteData) => {
@@ -61,43 +66,21 @@ export const deleteNote = async (noteId: string) => {
   await api.delete(`/notes/${noteId}`);
 };
 
-// export const getTags = async () => {
-//   const { data: res } = await nextServer.get<Tag[]>('/tag');
-//   return res;
-// };
-
-// export const register = async (data: RegisterRequest) => {
-//   const { data: res } = await api.post<User>('/auth/register', data);
-//   return res;
-// };
-
+// --- Auth / Users ---
 export const register = async (data: RegisterRequest): Promise<User> => {
   const response = await api.post<User>('/auth/register', data);
-
-  // Після успішної реєстрації, спробуйте отримати користувача
   try {
-    const userData = await getMe();
-    return userData;
-  } catch (error) {
-    console.error('Failed to get user after registration:', error);
+    return await getMe();
+  } catch {
     return response.data;
   }
 };
 
-// export const login = async (data: LoginRequest) => {
-//   const { data: res } = await api.post<User>('/auth/login', data);
-//   return res;
-// };
-
 export const login = async (data: LoginRequest): Promise<User> => {
   const response = await api.post<User>('/auth/login', data);
-
-  // Після входу отримайте дані користувача
   try {
-    const userData = await getMe();
-    return userData;
-  } catch (error) {
-    console.error('Failed to get user after login:', error);
+    return await getMe();
+  } catch {
     return response.data;
   }
 };
@@ -107,8 +90,8 @@ export const logout = async () => {
 };
 
 export const checkSession = async () => {
-  const response = await api.get<User>('/auth/session');
-  return response.data;
+  const { data } = await api.get<User>('/auth/session');
+  return data;
 };
 
 export const getMe = async () => {
@@ -121,10 +104,10 @@ export const updateMe = async (data: UpdateUserRequest) => {
   return res;
 };
 
+// --- Upload ---
 export const uploadUserImage = async (file: File): Promise<string> => {
   const formData = new FormData();
   formData.append('file', file);
-
   const { data } = await api.post<{ url: string }>('/upload', formData);
   return data.url;
 };
