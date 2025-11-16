@@ -1,26 +1,37 @@
-// app/(private routes)/notes/filter/[...slug]/Notes.client.tsx.tsx
 'use client';
 
-import { useState, ChangeEvent, useEffect } from 'react';
+import { useState, useEffect, ChangeEvent } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useDebouncedCallback } from 'use-debounce';
+import { useAuthStore } from '@/lib/store/authStore';
+
+import { fetchNotes } from '@/lib/api/clientApi';
+import type { Note, NoteTag } from '@/types/note';
+import { PER_PAGE } from '@/lib/constants';
 import SearchBox from '@/components/SearchBox/SearchBox';
 import NoteList from '@/components/NoteList/NoteList';
 import Pagination from '@/components/Pagination/Pagination';
-import { fetchNotes } from '@/lib/api/clientApi';
-import type { NoteListResponse } from '@/types/note';
-import css from './Notes.client.module.css';
 import Link from 'next/link';
-import { PER_PAGE, NoteTag } from '@/lib/constants';
+import css from './NotesClient.module.css';
 
 interface Props {
   tag?: NoteTag;
 }
 
-const NotesClient = ({ tag }: Props) => {
+interface NotesResponse {
+  items: Note[];
+  totalPages: number;
+  totalItems: number;
+  page: number;
+  perPage: number;
+}
+
+export default function NotesClient({ tag }: Props) {
+  const { isAuthenticated } = useAuthStore();
+
+  const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [page, setPage] = useState(1);
   const [currentTag, setCurrentTag] = useState<NoteTag | undefined>(tag);
 
   useEffect(() => {
@@ -35,42 +46,48 @@ const NotesClient = ({ tag }: Props) => {
     setPage(1);
   }, 500);
 
-  const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
     setSearch(value);
     debounced(value);
   };
 
-  const { data, isLoading, isError } = useQuery<NoteListResponse, Error>({
-    queryKey: ['notes', debouncedSearch, page, currentTag],
+  const {
+    data = { items: [], totalPages: 1, totalItems: 0, page, perPage: PER_PAGE },
+    isLoading,
+    isError,
+  } = useQuery<NotesResponse, Error>({
+    queryKey: ['notes', page, debouncedSearch, currentTag],
     queryFn: async () => {
       const res = await fetchNotes({
         search: debouncedSearch,
-        tag: currentTag,
         page,
         perPage: PER_PAGE,
+        tag: currentTag,
       });
 
       return {
-        notes: res.items,
-        totalPages: res.totalPages,
-        total: res.totalItems,
-        page: res.page,
-        perPage: res.perPage,
-      } as NoteListResponse;
+        items: res.items || [],
+        totalPages: res.totalPages ?? 1,
+        totalItems: res.totalItems ?? 0,
+        page: res.page ?? page,
+        perPage: res.perPage ?? PER_PAGE,
+      };
     },
-
-    placeholderData: {
-      notes: [],
-      totalPages: 1,
-      total: 0,
-      page,
-      perPage: PER_PAGE,
-    },
+    enabled: isAuthenticated,
   });
 
-  if (isLoading) return <p>Loading notes...</p>;
-  if (isError || !data) return <p>Could not fetch the list of notes.</p>;
+  if (!isAuthenticated) return <p>Please log in to see notes.</p>;
+  if (isError) return <p>Could not fetch notes.</p>;
+
+  const hasNotes = Array.isArray(data.items) && data.items.length > 0;
+
+  const notesToRender = isLoading
+    ? Array.from(
+        { length: PER_PAGE },
+        (_, i) => ({ id: `placeholder-${i}`, title: '', content: '' }) as Note,
+      )
+    : data.items;
 
   return (
     <section className={css.section}>
@@ -89,13 +106,9 @@ const NotesClient = ({ tag }: Props) => {
         />
       )}
 
-      {data.notes.length > 0 ? (
-        <NoteList notes={data.notes} />
-      ) : (
-        <p>No notes found</p>
-      )}
+      <NoteList notes={notesToRender} isLoading={isLoading} />
+
+      {!hasNotes && !isLoading && <p>No notes found</p>}
     </section>
   );
-};
-
-export default NotesClient;
+}

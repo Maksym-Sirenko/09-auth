@@ -1,6 +1,38 @@
+.navigation {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.navigationList {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    /* збільшили відстань між елементами списку */
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.navigationItem {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    /* збільшили gap між username і кнопкою */
+}
+
+.navigationLink {
+    text-decoration: none;
+    color: white;
+    font-size: 1rem;
+}
+
+.navigationLink:hover {
+    color: #ddd;
+}
+
 .userEmail {
     color: white;
-    margin-right: 0.5rem;
     font-size: 0.9rem;
 }
 
@@ -18,19 +50,4 @@
 .logoutButton:hover {
     background-color: white;
     color: #333;
-}
-
-.navigationItem {
-    display: flex;
-    align-items: center;
-}
-
-.navigationLink {
-    text-decoration: none;
-    color: white;
-    font-size: 1rem;
-}
-
-.navigationLink:hover {
-    color: #ddd;
 }

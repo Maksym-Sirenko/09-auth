@@ -1,4 +1,5 @@
 // lib/api/clientApi.ts
+
 import { AxiosResponse } from 'axios';
 import { api } from './api';
 import { Note, NoteTag } from '@/types/note';
@@ -31,42 +32,53 @@ type RawFetchNotesResponse = {
   data?: Note[];
 };
 
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('accessToken');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
 export type CreateNoteInput = Pick<Note, 'title' | 'content' | 'tag'>;
 
-export async function fetchNotes(
-  params: FetchNotesParams = {},
-): Promise<PagedNotes> {
-  const { page = 1, perPage = 12, search, tag } = params;
+// export async function fetchNotes(
+//   params: FetchNotesParams = {},
+// ): Promise<PagedNotes> {
+//   const { page = 1, perPage = 12, search, tag } = params;
 
-  const q = (search ?? '').trim();
-  const queryParams: Record<string, unknown> = { page, perPage };
+//   const q = (search ?? '').trim();
+//   const queryParams: Record<string, unknown> = { page, perPage };
 
-  if (q.length >= 2) queryParams.search = q;
-  if (tag) queryParams.tag = tag;
+//   if (q.length >= 2) queryParams.search = q;
+//   if (tag) queryParams.tag = tag;
 
-  const res: AxiosResponse<RawFetchNotesResponse> = await api.get('/notes', {
-    params: queryParams,
-  });
+//   const res: AxiosResponse<RawFetchNotesResponse> = await api.get('/notes', {
+//     params: queryParams,
+//     headers: getAuthHeaders(),
+//   });
 
-  const data = res.data;
-  const items =
-    data.notes ?? data.results ?? data.items ?? data.data ?? ([] as Note[]);
+//   const data = res.data;
+//   const items =
+//     data.notes ?? data.results ?? data.items ?? data.data ?? ([] as Note[]);
 
-  return {
-    page: data.page ?? page,
-    perPage: data.perPage ?? perPage,
-    totalItems: data.totalItems ?? items.length,
-    totalPages:
-      data.totalPages ??
-      Math.max(
-        1,
-        Math.ceil(
-          (data.totalItems ?? items.length) / (data.perPage ?? perPage),
-        ),
-      ),
-    items,
-  };
-}
+//   return {
+//     page: data.page ?? page,
+//     perPage: data.perPage ?? perPage,
+//     totalItems: data.totalItems ?? items.length,
+//     totalPages:
+//       data.totalPages ??
+//       Math.max(
+//         1,
+//         Math.ceil(
+//           (data.totalItems ?? items.length) / (data.perPage ?? perPage),
+//         ),
+//       ),
+//     items,
+//   };
+// }
+
+export const fetchNotes = async (params: FetchNotesParams = {}) => {
+  const res = await api.get('/notes', { params });
+  return res.data;
+};
 
 export async function fetchNoteById(id: string | number): Promise<Note> {
   const res: AxiosResponse<Note> = await api.get(`/notes/${id}`);

@@ -1,3 +1,4 @@
+// lib/store/authStore.ts
 import { create } from 'zustand';
 import type { User } from '@/types/user';
 import {
@@ -11,25 +12,27 @@ import {
 type AuthStore = {
   user: User | null;
   isAuthenticated: boolean;
-  setUser: (user: User | null) => void;
+  setUser: (user: User) => void;
   clearIsAuthenticated: () => void;
   checkAuth: () => Promise<void>;
-  logout: () => void;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
 };
 
 export const useAuthStore = create<AuthStore>((set) => ({
   user: null,
   isAuthenticated: false,
-  setUser: (user) => set({ user, isAuthenticated: !!user }),
+
+  setUser: (user) => set({ user, isAuthenticated: true }),
   clearIsAuthenticated: () => set({ user: null, isAuthenticated: false }),
+
   checkAuth: async () => {
     try {
       const ok = await checkSession();
       if (ok) {
-        const u = await getMe();
-        set({ user: u, isAuthenticated: true });
+        const user = await getMe();
+        set({ user, isAuthenticated: true });
       } else {
         set({ user: null, isAuthenticated: false });
       }
@@ -37,19 +40,21 @@ export const useAuthStore = create<AuthStore>((set) => ({
       set({ user: null, isAuthenticated: false });
     }
   },
-  logout: async () => {
-    set({ user: null, isAuthenticated: false });
-    try {
-      await apiLogout();
-      localStorage.removeItem('accessToken');
-    } catch {}
-  },
+
   signIn: async (email, password) => {
     const user = await login({ email, password });
     set({ user, isAuthenticated: true });
   },
+
   signUp: async (email, password) => {
     const user = await apiRegister({ email, password });
     set({ user, isAuthenticated: true });
+  },
+
+  logout: async () => {
+    try {
+      await apiLogout();
+    } catch {}
+    set({ user: null, isAuthenticated: false });
   },
 }));

@@ -9,6 +9,7 @@ import Link from 'next/link';
 
 interface NoteListProps {
   notes: Note[];
+  isLoading?: boolean;
 }
 
 const NoteList = ({ notes }: NoteListProps) => {
