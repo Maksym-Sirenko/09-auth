@@ -17,7 +17,7 @@ export const TAGS = [
 
 export type NoteTag = (typeof TAGS)[number];
 
-export const VERSEL_URL = 'https://08-zustand-livid-one.vercel.app/';
+export const VERSEL_URL = 'https://09-auth-mu-ashen.vercel.app/';
 
 export const IMAGE_URL =
   'https://ac.goit.global/fullstack/react/notehub-og-meta.jpg';
