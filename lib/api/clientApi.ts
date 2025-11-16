@@ -21,59 +21,7 @@ export interface PagedNotes {
   items: Note[];
 }
 
-type RawFetchNotesResponse = {
-  page: number;
-  perPage: number;
-  totalItems: number;
-  totalPages: number;
-  notes?: Note[];
-  results?: Note[];
-  items?: Note[];
-  data?: Note[];
-};
-
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('accessToken');
-  return token ? { Authorization: `Bearer ${token}` } : {};
-};
-
 export type CreateNoteInput = Pick<Note, 'title' | 'content' | 'tag'>;
-
-// export async function fetchNotes(
-//   params: FetchNotesParams = {},
-// ): Promise<PagedNotes> {
-//   const { page = 1, perPage = 12, search, tag } = params;
-
-//   const q = (search ?? '').trim();
-//   const queryParams: Record<string, unknown> = { page, perPage };
-
-//   if (q.length >= 2) queryParams.search = q;
-//   if (tag) queryParams.tag = tag;
-
-//   const res: AxiosResponse<RawFetchNotesResponse> = await api.get('/notes', {
-//     params: queryParams,
-//     headers: getAuthHeaders(),
-//   });
-
-//   const data = res.data;
-//   const items =
-//     data.notes ?? data.results ?? data.items ?? data.data ?? ([] as Note[]);
-
-//   return {
-//     page: data.page ?? page,
-//     perPage: data.perPage ?? perPage,
-//     totalItems: data.totalItems ?? items.length,
-//     totalPages:
-//       data.totalPages ??
-//       Math.max(
-//         1,
-//         Math.ceil(
-//           (data.totalItems ?? items.length) / (data.perPage ?? perPage),
-//         ),
-//       ),
-//     items,
-//   };
-// }
 
 export const fetchNotes = async (params: FetchNotesParams = {}) => {
   const res = await api.get('/notes', { params });
