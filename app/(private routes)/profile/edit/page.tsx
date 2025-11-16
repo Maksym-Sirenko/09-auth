@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useAuthStore } from '@/lib/store/authStore';
 import { updateMe } from '@/lib/api/clientApi';
-import css from '@/app/ProfileEdit.module.css';
+import css from './ProfileEdit.module.css';
 
 const EditProfile = () => {
   const { user, setUser } = useAuthStore();

@@ -1,8 +1,12 @@
-import { api } from './api';
+// lib/api/clientApi.ts
+
+import { apiServer } from './api';
 import { type AxiosResponse } from 'axios';
 
 import type { User } from '@/types/user';
 import type { Note, NoteTag } from '@/types/note';
+
+//===========================================================================
 
 export interface FetchNotesParams {
   page?: number;
@@ -32,6 +36,8 @@ type RawFetchNotesResponse = {
 
 export type CreateNoteInput = Pick<Note, 'title' | 'content' | 'tag'>;
 
+// ---------------- NOTES ---------------------------------------------------
+
 export async function fetchNotes(
   params: FetchNotesParams = {},
 ): Promise<PagedNotes> {
@@ -43,9 +49,12 @@ export async function fetchNotes(
   if (q.length >= 2) queryParams.search = q;
   if (tag) queryParams.tag = tag;
 
-  const res: AxiosResponse<RawFetchNotesResponse> = await api.get('/notes', {
-    params: queryParams,
-  });
+  const res: AxiosResponse<RawFetchNotesResponse> = await apiServer.get(
+    '/notes',
+    {
+      params: queryParams,
+    },
+  );
 
   const data = res.data;
   const items =
@@ -68,17 +77,17 @@ export async function fetchNotes(
 }
 
 export async function fetchNoteById(id: string | number): Promise<Note> {
-  const res: AxiosResponse<Note> = await api.get(`/notes/${id}`);
+  const res: AxiosResponse<Note> = await apiServer.get(`/notes/${id}`);
   return res.data;
 }
 
 export async function createNote(input: CreateNoteInput): Promise<Note> {
-  const res: AxiosResponse<Note> = await api.post('/notes', input);
+  const res: AxiosResponse<Note> = await apiServer.post('/notes', input);
   return res.data;
 }
 
 export async function deleteNote(id: string): Promise<Note> {
-  const res: AxiosResponse<Note> = await api.delete(`/notes/${id}`);
+  const res: AxiosResponse<Note> = await apiServer.delete(`/notes/${id}`);
   return res.data;
 }
 
@@ -102,32 +111,30 @@ export type UpdateUserRequest = {
 };
 
 export const register = async (data: RegisterRequest) => {
-  const res = await api.post<User>('/auth/register', data);
+  const res = await apiServer.post<User>('/auth/register', data);
   return res.data;
 };
 
 export const login = async (data: LoginRequest) => {
-  const res = await api.post<User>('/auth/login', data);
+  const res = await apiServer.post<User>('/auth/login', data);
   return res.data;
 };
 
 export const logout = async (): Promise<void> => {
-  await api.post('/auth/logout');
+  await apiServer.post('/auth/logout');
 };
 
 export const checkSession = async () => {
-  const res = await api.get<CheckSessionRequest>('/auth/session');
+  const res = await apiServer.get<CheckSessionRequest>('/auth/session');
   return res.data.success;
 };
 
-// ---------------- USERS --------------------------------------------------
-
 export const getMe = async () => {
-  const { data } = await api.get<User>('/users/me');
+  const { data } = await apiServer.get<User>('/users/me');
   return data;
 };
 
 export const updateMe = async (payload: UpdateUserRequest) => {
-  const res = await api.patch<User>('/users/me', payload);
+  const res = await apiServer.patch<User>('/users/me', payload);
   return res.data;
 };

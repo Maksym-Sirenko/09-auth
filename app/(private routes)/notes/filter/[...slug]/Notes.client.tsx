@@ -14,7 +14,7 @@ import SearchBox from '@/components/SearchBox/SearchBox';
 import NoteList from '@/components/NoteList/NoteList';
 import Pagination from '@/components/Pagination/Pagination';
 import Link from 'next/link';
-import css from '@/app/NotesClient.module.css';
+import css from './NotesClient.module.css';
 
 interface Props {
   tag?: NoteTag;
@@ -67,8 +67,6 @@ export default function NotesClient({ tag }: Props) {
         perPage: PER_PAGE,
         tag: currentTag,
       });
-
-      
 
       return {
         items: res.items || [],
