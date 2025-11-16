@@ -1,7 +1,7 @@
 // app/(private routes)/profile/not-found.tsx
 
 import Link from 'next/link';
-import styles from './NotFound.module.css';
+import styles from './notFound.module.css';
 
 export default function ProfileNotFound() {
   return (
