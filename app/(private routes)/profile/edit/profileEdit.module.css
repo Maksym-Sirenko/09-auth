@@ -1,4 +1,4 @@
-/* page.module.css */
+ /* app/(private routes)/profile/ProfileEdit.module.css */
 
 .mainContent {
     flex: 1;
@@ -111,4 +111,10 @@
     display: flex;
     gap: 12px;
     margin-top: 20px;
+}
+
+.editProfile {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
