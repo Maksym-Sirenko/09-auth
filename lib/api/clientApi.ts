@@ -129,9 +129,9 @@ export const checkSession = async () => {
   return res.data.success;
 };
 
-export const getMe = async () => {
-  const { data } = await apiServer.get<User>('/users/me');
-  return data;
+export const getMe = async (): Promise<User> => {
+  const res = await apiServer.get('/users/me');
+  return res.data;
 };
 
 export const updateMe = async (payload: UpdateUserRequest) => {

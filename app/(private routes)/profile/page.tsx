@@ -2,7 +2,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { getMe } from '@/lib/api/serverApi';
-import css from './Profile.module.css';
+import css from './profile.module.css';
 
 async function ProfilePage() {
   const user = await getMe();
