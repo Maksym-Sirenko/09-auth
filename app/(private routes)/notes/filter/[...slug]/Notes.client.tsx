@@ -1,3 +1,4 @@
+// app/(private routes)/notes/filter/[...slug]/Notes.client.tsx.tsx
 'use client';
 
 import { useState, ChangeEvent, useEffect } from 'react';
@@ -10,7 +11,7 @@ import { fetchNotes } from '@/lib/api/clientApi';
 import type { NoteListResponse } from '@/types/note';
 import css from './Notes.client.module.css';
 import Link from 'next/link';
-import { PER_PAGE, TAGS, NoteTag } from '@/lib/constants';
+import { PER_PAGE, NoteTag } from '@/lib/constants';
 
 interface Props {
   tag?: NoteTag;

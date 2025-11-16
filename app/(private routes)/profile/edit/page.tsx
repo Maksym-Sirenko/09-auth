@@ -1,6 +1,8 @@
 // app/(private routes)/profile/edit/page.tsx
 'use client';
 
+import axios from 'axios';
+import { getMe, checkSession } from '@/lib/api/clientApi';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -29,8 +31,39 @@ const EditProfile = () => {
     try {
       const updatedUser = await updateMe({ username });
       setUser(updatedUser);
+
       router.push('/profile');
-    } catch {
+
+      try {
+        router.refresh();
+      } catch {}
+      return;
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response?.status === 401) {
+        try {
+          const sessionOk = await checkSession();
+          if (sessionOk) {
+            const fresh = await getMe();
+            setUser(fresh);
+
+            const updatedUser2 = await updateMe({ username });
+            setUser(updatedUser2);
+            router.push('/profile');
+            try {
+              router.refresh();
+            } catch {}
+            return;
+          } else {
+            setError('Session expired, please sign in again.');
+            router.push('/sign-in');
+            return;
+          }
+        } catch {
+          setError('Failed to update profile. Please try again (or re-login).');
+          return;
+        }
+      }
+
       setError('Failed to update profile. Please try again.');
     } finally {
       setIsLoading(false);

@@ -3,6 +3,7 @@ import { AxiosResponse } from 'axios';
 import { api } from './api';
 import { Note, NoteTag } from '@/types/note';
 import { User } from '@/types/user';
+import { normalizeUserResponse } from '../utils/normalizeUser';
 
 export interface FetchNotesParams {
   page?: number;
@@ -103,12 +104,12 @@ export type UpdateUserRequest = {
 
 export const register = async (data: RegisterRequest) => {
   const res = await api.post<User>('/auth/register', data);
-  return res.data;
+  return normalizeUserResponse(res.data);
 };
 
 export const login = async (data: LoginRequest) => {
   const res = await api.post<User>('/auth/login', data);
-  return res.data;
+  return normalizeUserResponse(res.data);
 };
 
 export const logout = async (): Promise<void> => {
@@ -121,11 +122,11 @@ export const checkSession = async () => {
 };
 
 export const getMe = async () => {
-  const { data } = await api.get<User>('/users/me');
-  return data;
+  const res = await api.get('/users/me');
+  return normalizeUserResponse(res.data);
 };
 
 export const updateMe = async (payload: UpdateUserRequest) => {
-  const res = await api.patch<User>('/users/me', payload);
-  return res.data;
+  const res = await api.patch('/users/me', payload);
+  return normalizeUserResponse(res.data);
 };

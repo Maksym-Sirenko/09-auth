@@ -1,28 +1,30 @@
-import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { api } from "../../api";
-import { parse } from "cookie";
-import { isAxiosError } from "axios";
-import { logErrorResponse } from "../../_utils/utils";
+import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
+import { api } from '../../api';
+import { parse } from 'cookie';
+import { isAxiosError } from 'axios';
+import { logErrorResponse } from '../../_utils/utils';
 
 export async function GET() {
   try {
     const cookieStore = await cookies();
-    const accessToken = cookieStore.get("accessToken")?.value;
-    const refreshToken = cookieStore.get("refreshToken")?.value;
+    const accessToken = cookieStore.get('accessToken')?.value;
+    const refreshToken = cookieStore.get('refreshToken')?.value;
 
     if (accessToken) {
       return NextResponse.json({ success: true });
     }
 
     if (refreshToken) {
-      const apiRes = await api.get("auth/session", {
+      const apiRes = await api.get('auth/session', {
         headers: {
           Cookie: cookieStore.toString(),
         },
       });
 
-      const setCookie = apiRes.headers["set-cookie"];
+      const setCookie = apiRes.headers['set-cookie'];
+      console.log('Відповідь від auth/session:', apiRes.data);
+      console.log('Set-Cookie заголовки:', setCookie);
 
       if (setCookie) {
         const cookieArray = Array.isArray(setCookie) ? setCookie : [setCookie];
@@ -32,14 +34,20 @@ export async function GET() {
           const options = {
             expires: parsed.Expires ? new Date(parsed.Expires) : undefined,
             path: parsed.Path,
-            maxAge: Number(parsed["Max-Age"]),
+            maxAge: Number(parsed['Max-Age']),
           };
 
           if (parsed.accessToken)
-            cookieStore.set("accessToken", parsed.accessToken, options);
+            cookieStore.set('accessToken', parsed.accessToken, options);
           if (parsed.refreshToken)
-            cookieStore.set("refreshToken", parsed.refreshToken, options);
+            cookieStore.set('refreshToken', parsed.refreshToken, options);
         }
+        console.log(
+          'CookieStore після встановлення токенів:',
+          cookieStore.get('accessToken')?.value,
+          cookieStore.get('refreshToken')?.value,
+        );
+
         return NextResponse.json({ success: true }, { status: 200 });
       }
     }

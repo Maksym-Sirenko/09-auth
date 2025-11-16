@@ -19,7 +19,7 @@ type AuthStore = {
   signUp: (email: string, password: string) => Promise<void>;
 };
 
-export const useAuthStore = create<AuthStore>((set, get) => ({
+export const useAuthStore = create<AuthStore>((set) => ({
   user: null,
   isAuthenticated: false,
   setUser: (user) => set({ user, isAuthenticated: !!user }),
