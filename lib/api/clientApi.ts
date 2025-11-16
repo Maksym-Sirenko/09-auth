@@ -1,10 +1,8 @@
-// lib/api/clientApi.ts
-
-import { AxiosResponse } from 'axios';
 import { api } from './api';
-import { Note, NoteTag } from '@/types/note';
-import { User } from '@/types/user';
-import { normalizeUserResponse } from '../utils/normalizeUser';
+import { type AxiosResponse } from 'axios';
+
+import type { User } from '@/types/user';
+import type { Note, NoteTag } from '@/types/note';
 
 export interface FetchNotesParams {
   page?: number;
@@ -21,12 +19,53 @@ export interface PagedNotes {
   items: Note[];
 }
 
+type RawFetchNotesResponse = {
+  page: number;
+  perPage: number;
+  totalItems: number;
+  totalPages: number;
+  notes?: Note[];
+  results?: Note[];
+  items?: Note[];
+  data?: Note[];
+};
+
 export type CreateNoteInput = Pick<Note, 'title' | 'content' | 'tag'>;
 
-export const fetchNotes = async (params: FetchNotesParams = {}) => {
-  const res = await api.get('/notes', { params });
-  return res.data;
-};
+export async function fetchNotes(
+  params: FetchNotesParams = {},
+): Promise<PagedNotes> {
+  const { page = 1, perPage = 12, search, tag } = params;
+
+  const q = (search ?? '').trim();
+  const queryParams: Record<string, unknown> = { page, perPage };
+
+  if (q.length >= 2) queryParams.search = q;
+  if (tag) queryParams.tag = tag;
+
+  const res: AxiosResponse<RawFetchNotesResponse> = await api.get('/notes', {
+    params: queryParams,
+  });
+
+  const data = res.data;
+  const items =
+    data.notes ?? data.results ?? data.items ?? data.data ?? ([] as Note[]);
+
+  return {
+    page: data.page ?? page,
+    perPage: data.perPage ?? perPage,
+    totalItems: data.totalItems ?? items.length,
+    totalPages:
+      data.totalPages ??
+      Math.max(
+        1,
+        Math.ceil(
+          (data.totalItems ?? items.length) / (data.perPage ?? perPage),
+        ),
+      ),
+    items,
+  };
+}
 
 export async function fetchNoteById(id: string | number): Promise<Note> {
   const res: AxiosResponse<Note> = await api.get(`/notes/${id}`);
@@ -64,12 +103,12 @@ export type UpdateUserRequest = {
 
 export const register = async (data: RegisterRequest) => {
   const res = await api.post<User>('/auth/register', data);
-  return normalizeUserResponse(res.data);
+  return res.data;
 };
 
 export const login = async (data: LoginRequest) => {
   const res = await api.post<User>('/auth/login', data);
-  return normalizeUserResponse(res.data);
+  return res.data;
 };
 
 export const logout = async (): Promise<void> => {
@@ -81,12 +120,14 @@ export const checkSession = async () => {
   return res.data.success;
 };
 
+// ---------------- USERS --------------------------------------------------
+
 export const getMe = async () => {
-  const res = await api.get('/users/me');
-  return normalizeUserResponse(res.data);
+  const { data } = await api.get<User>('/users/me');
+  return data;
 };
 
 export const updateMe = async (payload: UpdateUserRequest) => {
-  const res = await api.patch('/users/me', payload);
-  return normalizeUserResponse(res.data);
+  const res = await api.patch<User>('/users/me', payload);
+  return res.data;
 };
