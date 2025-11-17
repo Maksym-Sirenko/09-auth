@@ -3,6 +3,36 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { getMe } from '@/lib/api/serverApi';
 import css from './profile.module.css';
+import { Metadata } from 'next';
+import { VERSEL_URL, IMAGE_URL } from '@/lib/constants';
+
+export const metadata: Metadata = {
+  title: 'Profile — NoteHub',
+  description: 'User profile: Manage your NoteHub account.',
+
+  openGraph: {
+    title: 'Profile — NoteHub',
+    description: 'User profile: Manage your NoteHub account.',
+    url: `${VERSEL_URL}/profile`,
+    siteName: 'NoteHub',
+    images: [
+      {
+        url: IMAGE_URL,
+        width: 1200,
+        height: 630,
+        alt: 'Profile',
+      },
+    ],
+    type: 'profile',
+  },
+
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Profile — NoteHub',
+    description: 'User profile: Manage your NoteHub account.',
+    images: IMAGE_URL,
+  },
+};
 
 async function ProfilePage() {
   const user = await getMe();

@@ -1,4 +1,4 @@
-// app/(private routes)/notes/[id]/page.tsx
+// app/@modal/(.)notes/[id]/page.tsx
 
 import { Metadata } from 'next';
 import { fetchNoteById } from '@/lib/api/serverApi';
@@ -7,47 +7,42 @@ import {
   HydrationBoundary,
   QueryClient,
 } from '@tanstack/react-query';
-import NoteDetailsClient from './NoteDetails.client';
+import NotePreviewClient from './NoteDetails.client';
 import { IMAGE_URL, VERSEL_URL } from '@/lib/constants';
 
 type Props = {
   params: Promise<{ id: string }>;
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { id } = await params;
-  const note = await fetchNoteById(id);
+export const metadata: Metadata = {
+  title: 'Note Details — NoteHub',
+  description: 'View note details in NoteHub application.',
 
-  const title = `Note: ${note.title}`;
+  openGraph: {
+    title: 'Note Details — NoteHub',
+    description: 'View note details in NoteHub application.',
+    url: `${VERSEL_URL}/notes`,
+    siteName: 'NoteHub',
+    images: [
+      {
+        url: IMAGE_URL,
+        width: 1200,
+        height: 630,
+        alt: 'Note Details',
+      },
+    ],
+    type: 'website',
+  },
 
-  return {
-    title,
-    description: note.content.slice(0, 30),
-    openGraph: {
-      title,
-      description: note.content.slice(0, 100),
-      url: `${VERSEL_URL}/notes/filter/${id}`,
-      siteName: 'NoteHub',
-      images: [
-        {
-          url: IMAGE_URL,
-          width: 1200,
-          height: 630,
-          alt: 'Note Details Image',
-        },
-      ],
-      type: 'article',
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: note.title,
-      description: note.content.slice(0, 100),
-      images: [IMAGE_URL],
-    },
-  };
-}
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Note Details — NoteHub',
+    description: 'View note details in NoteHub application.',
+    images: IMAGE_URL,
+  },
+};
 
-const NoteDetails = async ({ params }: Props) => {
+const NotePreviewPage = async ({ params }: Props) => {
   const { id } = await params;
   const queryClient = new QueryClient();
 
@@ -58,9 +53,9 @@ const NoteDetails = async ({ params }: Props) => {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <NoteDetailsClient noteId={id} />
+      <NotePreviewClient noteId={id} />
     </HydrationBoundary>
   );
 };
 
-export default NoteDetails;
+export default NotePreviewPage;

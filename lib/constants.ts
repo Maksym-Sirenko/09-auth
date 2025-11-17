@@ -22,6 +22,4 @@ export const VERSEL_URL = 'https://09-auth-mu-ashen.vercel.app/';
 export const IMAGE_URL =
   'https://ac.goit.global/fullstack/react/notehub-og-meta.jpg';
 
-export const BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/api`;
-
 export const PER_PAGE = 12;

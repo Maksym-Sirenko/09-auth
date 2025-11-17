@@ -8,7 +8,7 @@ import type { Note } from '@/types/note';
 import css from './NoteDetails.module.css';
 
 const NoteDetailsClient = ({ noteId }: { noteId: string }) => {
-  const isValidId = !!noteId;
+  const isValidId = !!noteId && noteId.trim() !== '';
 
   const {
     data: note,
@@ -19,24 +19,29 @@ const NoteDetailsClient = ({ noteId }: { noteId: string }) => {
     queryFn: () => fetchNoteById(noteId),
     refetchOnMount: false,
     enabled: isValidId,
+    retry: 1,
   });
 
   if (!isValidId) {
     return <p>Invalid note ID</p>;
   }
 
-  if (isLoading) return <p>Loading note details...</p>;
-  if (isError || !note) return <p>Something went wrong.</p>;
-  if (!note) return <p>Note not found</p>;
+  if (isLoading)
+    return <div className={css.loading}>Loading note details...</div>;
+  if (isError) return <div className={css.error}>Failed to load note</div>;
+  if (!note) return <div className={css.error}>Note not found</div>;
 
   return (
     <div className={css.container}>
       <div className={css.item}>
         <div className={css.header}>
           <h2>{note.title}</h2>
+          {note.tag && <span className={css.tag}>{note.tag}</span>}
         </div>
         <p className={css.content}>{note.content}</p>
-        <p className={css.date}>{note.createdAt}</p>
+        <p className={css.date}>
+          {new Date(note.createdAt).toLocaleDateString()}
+        </p>
       </div>
     </div>
   );

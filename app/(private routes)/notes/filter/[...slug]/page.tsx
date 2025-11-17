@@ -1,9 +1,11 @@
+// app/(private routes)/notes/filter/[...slug]/page.tsx
+
 import {
   dehydrate,
   HydrationBoundary,
   QueryClient,
 } from '@tanstack/react-query';
-import { fetchNotes } from '@/lib/api/clientApi';
+import { fetchNotes } from '@/lib/api/serverApi';
 import {
   PER_PAGE,
   ALL_NOTES,
@@ -13,54 +15,80 @@ import {
 } from '@/lib/constants';
 import NotesClient from './Notes.client';
 import type { Metadata } from 'next';
-import type { NoteListResponse } from '@/types/note';
 
 interface Props {
-  params: { slug: string[] };
+  params: Promise<{ slug?: string[] }>;
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Props['params'];
-}): Promise<Metadata> {
-  const slug = params.slug?.[0] ?? 'all';
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  const maybe = slug?.[0];
+
+  const tagOrAll =
+    !maybe || maybe === 'all' ? 'All' : decodeURIComponent(maybe);
+  const title =
+    tagOrAll === 'All' ? 'All notes | NoteHub' : `${tagOrAll} notes | NoteHub`;
+  const description =
+    tagOrAll === 'All'
+      ? 'Browse all notes with search and pagination.'
+      : `Browse notes tagged "${tagOrAll}".`;
+  const url = `${VERSEL_URL}/notes/filter/${
+    tagOrAll === 'All' ? 'all' : encodeURIComponent(tagOrAll)
+  }`;
 
   return {
-    title: `Notes - ${slug}`,
-    description: `Notes filtered by ${slug}`,
+    title,
+    description,
+
     openGraph: {
-      title: `Notes - ${slug}`,
-      description: `Notes filtered by ${slug}`,
-      url: `${VERSEL_URL}/notes/filter/${slug}`,
-      images: [{ url: IMAGE_URL, width: 1200, height: 630, alt: 'Notes' }],
+      title,
+      description,
+      url,
+      siteName: 'NoteHub',
+      images: [
+        {
+          url: IMAGE_URL,
+          width: 1200,
+          height: 630,
+          alt: tagOrAll === 'All' ? 'All notes' : `${tagOrAll} notes`,
+        },
+      ],
+      type: 'website',
+    },
+
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: IMAGE_URL,
     },
   };
 }
 
 const NotesPage = async ({ params }: Props) => {
-  const slug = params.slug?.[0] ?? ALL_NOTES;
+  const { slug } = await params;
+  const slugValue = slug?.[0] ?? ALL_NOTES;
+
   const queryClient = new QueryClient();
 
   const tag: NoteTag | undefined =
-    slug === ALL_NOTES ? undefined : (slug as NoteTag);
+    slugValue === ALL_NOTES ? undefined : (slugValue as NoteTag);
 
-  await queryClient.prefetchQuery<NoteListResponse>({
+  await queryClient.prefetchQuery({
     queryKey: ['notes', '', 1, tag],
     queryFn: async () => {
-      const res = await fetchNotes({
+      const notes = await fetchNotes({
         search: '',
         tag: tag,
-        page: 1,
-        perPage: PER_PAGE,
       });
 
       return {
-        notes: res.items,
-        totalPages: res.totalPages,
-        page: res.page,
+        items: notes,
+        totalPages: 1,
+        totalItems: notes.length,
+        page: 1,
         perPage: PER_PAGE,
-      } as NoteListResponse;
+      };
     },
   });
 

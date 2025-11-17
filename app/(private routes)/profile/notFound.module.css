@@ -1,23 +1,129 @@
-/* app/not-found.module.css */
-.wrapper {
-    padding: 24px;
+.container {
+    max-width: 800px;
+    margin: 32px auto;
+    padding: 32px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #f0f0f0;
+}
+
+.item {
     display: flex;
     flex-direction: column;
+    gap: 24px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 2px solid #f8f9fa;
+    padding-bottom: 16px;
     gap: 16px;
 }
 
-.title {
+.header h2 {
+    margin: 0;
     font-size: 32px;
+    font-weight: 700;
+    color: #1a1a1a;
     line-height: 1.2;
+    flex: 1;
 }
 
-.text {
-    opacity: 0.8;
-    max-width: 400px;
+.content {
+    font-size: 18px;
+    line-height: 1.7;
+    color: #444;
+    white-space: pre-wrap;
+    margin: 0;
+    padding: 0;
 }
 
-.links {
-    margin-top: 16px;
-    display: flex;
-    gap: 12px;
+.date {
+    font-size: 14px;
+    color: #6c757d;
+    text-align: right;
+    margin: 0;
+    font-style: italic;
+}
+
+.tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #0d6efd;
+    background-color: #e7f1ff;
+    border: 1px solid #b6d4fe;
+    border-radius: 16px;
+    white-space: nowrap;
+    text-transform: capitalize;
+    flex-shrink: 0;
+}
+
+.loading {
+    text-align: center;
+    padding: 40px;
+    font-size: 18px;
+    color: #6c757d;
+}
+
+.error {
+    text-align: center;
+    padding: 40px;
+    font-size: 18px;
+    color: #dc3545;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+@media (max-width: 768px) {
+    .container {
+        margin: 16px;
+        padding: 24px;
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .header h2 {
+        font-size: 24px;
+    }
+
+    .content {
+        font-size: 16px;
+        line-height: 1.6;
+    }
+
+    .date {
+        text-align: left;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        margin: 8px;
+        padding: 20px;
+    }
+
+    .header h2 {
+        font-size: 20px;
+    }
+
+    .content {
+        font-size: 15px;
+    }
+
+    .tag {
+        font-size: 12px;
+        padding: 4px 10px;
+    }
 }
