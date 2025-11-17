@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import * as Yup from 'yup';
-import css from './SignUp.module.css';
+import css from './SignIn.module.css';
 import { useAuthStore } from '@/lib/store/authStore';
 import { register } from '@/lib/api/clientApi';
 
