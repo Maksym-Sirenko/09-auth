@@ -6,7 +6,7 @@ import Link from 'next/link';
 import * as Yup from 'yup';
 import css from './SignIn.module.css';
 import { useAuthStore } from '@/lib/store/authStore';
-import { register } from '@/lib/api/clientApi';
+import { login } from '@/lib/api/clientApi';
 
 const signInSchema = Yup.object({
   email: Yup.string()
@@ -46,7 +46,7 @@ const SignIn = () => {
     try {
       await signInSchema.validate(formData, { abortEarly: false });
 
-      const user = await register({
+      const user = await login({
         email: formData.email,
         password: formData.password,
       });

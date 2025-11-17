@@ -54,7 +54,6 @@ const SignUp = () => {
       });
 
       setUser(user);
-
       router.push('/profile');
     } catch (err) {
       if (err instanceof Yup.ValidationError) {
@@ -79,8 +78,8 @@ const SignUp = () => {
 
   return (
     <main className={css.mainContent}>
-      <h1 className={css.formTitle}>Sign up</h1>
       <form className={css.form} onSubmit={handleSubmit}>
+        <h1 className={css.formTitle}>Sign up</h1>
         <div className={css.formGroup}>
           <label htmlFor="email">Email</label>
           <input
