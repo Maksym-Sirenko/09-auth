@@ -11,7 +11,7 @@ function toUser(obj: Record<string, unknown>): User | null {
   const avatar = typeof obj.avatar === 'string' ? obj.avatar : undefined;
 
   if (!email || !username) return null;
-  return { email, username, avatar };
+  return { email, username, avatar: avatar as string };
 }
 
 /**
